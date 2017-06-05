@@ -10,11 +10,15 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    ContentResolver resolver;
+    Cursor cursor;
 
     Button mNextButton;
     Button mPsButton;
@@ -60,11 +64,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @Override
     public void onClick(View v) {
         if (v.getId() == R.id.next_button) {
             cursor.moveToNext();
         }
-        cursor.close();
+        //cursor.close();
     }
 
     private void getContentsInfo() {
@@ -86,6 +91,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ImageView imageVIew = (ImageView) findViewById(R.id.imageView);
             imageVIew.setImageURI(imageUri);
         }
+
+        //cursor.close();
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("Android", "onStop");
         cursor.close();
     }
+
 }
