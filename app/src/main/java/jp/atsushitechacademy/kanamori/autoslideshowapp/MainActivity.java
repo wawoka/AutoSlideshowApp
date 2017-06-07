@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,7 +16,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    //タイマー追加分
+    Timer mTimer;
+    double mTimerSec = 0.0;
+    Handler mHandler = new Handler();
+
 
     ContentResolver resolver;
     Cursor cursor;
@@ -30,6 +40,74 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //タイマー追加分
+       /* mPsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mTimer == null) {
+                    mTimer = new Timer();
+                    mTimer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            mTimerSec += 0.1;
+                            mHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    cursor.moveToNext();
+                                    int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+                                    Long id = cursor.getLong(fieldIndex);
+                                    Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
+                                    ImageView imageVIew = (ImageView) findViewById(R.id.imageView);
+                                    imageVIew.setImageURI(imageUri);
+                                    if (cursor.isLast()) {
+                                        cursor.moveToFirst();
+                                    }
+                                }
+                            });
+                        }
+                    }, 2000, 2000);
+                }
+            }
+        });
+
+        mNextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v.getId() == R.id.next_button) {
+                cursor.moveToNext();
+                int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+                Long id = cursor.getLong(fieldIndex);
+                Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
+                ImageView imageVIew = (ImageView) findViewById(R.id.imageView);
+                imageVIew.setImageURI(imageUri);
+                if (cursor.isLast()) {
+                    cursor.moveToFirst();
+                }}
+            }
+        });
+
+        mReturnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v.getId() == R.id.return_button) {
+                cursor.moveToPrevious();
+                int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+                Long id = cursor.getLong(fieldIndex);
+                Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
+                ImageView imageVIew = (ImageView) findViewById(R.id.imageView);
+                imageVIew.setImageURI(imageUri);
+                if (cursor.isFirst()) {
+                    cursor.moveToLast();
+                }
+            }}
+        });*/
+
+
+
 
         mNextButton = (Button) findViewById(R.id.next_button);
         mPsButton = (Button) findViewById(R.id.ps_button);
@@ -64,18 +142,64 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.next_button) {
             cursor.moveToNext();
+            int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+            Long id = cursor.getLong(fieldIndex);
+            Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
+            ImageView imageVIew = (ImageView) findViewById(R.id.imageView);
+            imageVIew.setImageURI(imageUri);
+            if (cursor.isLast()) {
+                cursor.moveToFirst();
+            }
+        } else if (v.getId() == R.id.return_button) {
+            cursor.moveToPrevious();
+            int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+            Long id = cursor.getLong(fieldIndex);
+            Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
+            ImageView imageVIew = (ImageView) findViewById(R.id.imageView);
+            imageVIew.setImageURI(imageUri);
+            if (cursor.isFirst()) {
+                cursor.moveToLast();
+            }
+        } else if (v.getId() == R.id.return_button) {
+            mTimer = new Timer();
+            mTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    //mTimerSec += 0.1;
+
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            cursor.moveToNext();
+                            int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+                            Long id = cursor.getLong(fieldIndex);
+                            Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
+                            ImageView imageVIew = (ImageView) findViewById(R.id.imageView);
+                            imageVIew.setImageURI(imageUri);
+                            if (cursor.isLast()) {
+                                cursor.moveToFirst();
+                            }
+                        }
+                    });
+                }
+            }, 2000, 2000);
         }
-        //cursor.close();
     }
+
+
 
     private void getContentsInfo() {
 
-        ContentResolver resolver = getContentResolver();
-        Cursor cursor = resolver.query(
+        resolver = getContentResolver();
+        cursor = resolver.query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 null,
                 null,
@@ -91,8 +215,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ImageView imageVIew = (ImageView) findViewById(R.id.imageView);
             imageVIew.setImageURI(imageUri);
         }
-
-        //cursor.close();
     }
     @Override
     protected void onStop() {
@@ -100,5 +222,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d("Android", "onStop");
         cursor.close();
     }
-
 }
