@@ -27,14 +27,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Handler mHandler = new Handler();
     int a = 1;
 
-
     ContentResolver resolver;
     Cursor cursor;
 
     Button mNextButton;
     Button mPsButton;
     Button mReturnButton;
-
 
     private static final int PERMISSIONS_REQUEST_CODE = 100;
 
@@ -77,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.next_button) {
@@ -101,15 +98,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mTimer.cancel();
                 mTimer = null;
             }
-            cursor.moveToPrevious();
-            int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
-            Long id = cursor.getLong(fieldIndex);
-            Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-
-            ImageView imageVIew = (ImageView) findViewById(R.id.imageView);
-            imageVIew.setImageURI(imageUri);
             if (cursor.isFirst()) {
                 cursor.moveToLast();
+            } else if (cursor.moveToPrevious()) {
+
+
+                //cursor.moveToPrevious();
+                int fieldIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+                Long id = cursor.getLong(fieldIndex);
+                Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
+                ImageView imageVIew = (ImageView) findViewById(R.id.imageView);
+                imageVIew.setImageURI(imageUri);
             }
 
         } else if (v.getId() == R.id.ps_button) {
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mTimer.schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        //mTimerSec += 0.1;
+                        mTimerSec += 0.1;
 
                         mHandler.post(new Runnable() {
                             @Override
