@@ -68,6 +68,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case PERMISSIONS_REQUEST_CODE:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getContentsInfo();
+                } else {
+                    mNextButton.setEnabled(false);
+                    mPsButton.setEnabled(false);
+                    mReturnButton.setEnabled(false);
                 }
                 break;
             default:
