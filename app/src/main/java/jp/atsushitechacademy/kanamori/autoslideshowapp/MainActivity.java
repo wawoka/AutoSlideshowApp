@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (v.getId() == R.id.ps_button) {
 
             switch (a) {
-                case 1:
+                    case 1:
                     mNextButton.setEnabled(false);
                     mReturnButton.setEnabled(false);
                     a = 2;
